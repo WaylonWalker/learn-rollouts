@@ -41,3 +41,6 @@ spec:
     path: rollouts-app
     repoURL: 'https://github.com/waylonwalker/learn-rollouts'
     targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
