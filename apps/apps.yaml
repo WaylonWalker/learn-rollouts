@@ -19,6 +19,14 @@ spec:
 
 ---
 
+# create argo-rollouts namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argo-rollouts
+
+---
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -27,7 +35,7 @@ metadata:
 spec:
   project: default
   destination:
-    namespace: rollouts
+    namespace: argo-rollouts
     server: 'https://kubernetes.default.svc'
   source:
     path: rollouts-app
