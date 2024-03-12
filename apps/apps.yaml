@@ -1,0 +1,35 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apps
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: argo
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: apps
+    repoURL: 'https://github.com/waylonwalker/learn-rollouts'
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: rollouts
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: rollouts
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: rollouts-app
+    repoURL: 'https://github.com/waylonwalker/learn-rollouts'
+    targetRevision: HEAD
