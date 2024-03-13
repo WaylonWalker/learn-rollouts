@@ -104,7 +104,7 @@ kind: Ingress
 metadata:
   labels:
     service: hello-world
-  name: hello-world-ingress
+  name: hello-world-ingress-active
   namespace: hello-world
 spec:
   rules:
@@ -128,7 +128,7 @@ kind: Ingress
 metadata:
   labels:
     service: hello-world
-  name: hello-world-ingress
+  name: hello-world-ingress-preview
   namespace: hello-world
 spec:
   rules:
