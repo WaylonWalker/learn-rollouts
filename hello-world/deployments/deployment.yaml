@@ -104,12 +104,11 @@ kind: Ingress
 metadata:
   labels:
     service: hello-world
-  name: hello-world-ingress-active
+  name: hello-world-ingress
   namespace: hello-world
 spec:
   rules:
-    - host: localhost
-      http:
+    - http:
         paths:
           - backend:
               service:
@@ -118,22 +117,8 @@ spec:
                   number: 5000
             path: /active
             pathType: Prefix
-status:
-  loadBalancer: {}
 
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  labels:
-    service: hello-world
-  name: hello-world-ingress-preview
-  namespace: hello-world
-spec:
-  rules:
-    - host: localhost
-      http:
+    - http:
         paths:
           - backend:
               service:
