@@ -120,3 +120,27 @@ spec:
             pathType: Prefix
 status:
   loadBalancer: {}
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    service: hello-world
+  name: hello-world-ingress
+  namespace: hello-world
+spec:
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - backend:
+              service:
+                name: hello-world-preview
+                port:
+                  number: 5000
+            path: /preview
+            pathType: Prefix
+status:
+  loadBalancer: {}
