@@ -45,109 +45,18 @@ spec:
       # stack as soon as the ReplicaSet are completely ready/available.
       # Rollouts can be resumed using: `kubectl argo rollouts promote ROLLOUT`
       autoPromotionEnabled: false
-#
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: hello-world-active
-#   namespace: hello-world
-# spec:
-#   ports:
-#     - name: "5000"
-#       port: 5000
-#       targetPort: 5000
-#
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: hello-world-preview
-#   namespace: hello-world
-# spec:
-#   # selector:
-#   #   app: hello-world
-#   ports:
-#     - name: "5000"
-#       port: 5000
-#       targetPort: 5000
 
-# ---
-#
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   labels:
-#     app: hello-world
-#   name: hello-world-deployment
-#   namespace: hello-world
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: hello-world
-#   template:
-#     metadata:
-#       labels:
-#         app: hello-world
-#     spec:
-#       containers:
-#         - image: docker.io/waylonwalker/learn-rollouts:v2
-#           name: hello-world
-#           ports:
-#             - containerPort: 5000
-
-# ---
-#
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   labels:
-#     service: hello-world
-#   name: hello-world-ingress
-#   namespace: hello-world
-# spec:
-#   rules:
-#     - http:
-#         paths:
-#           - backend:
-#               service:
-#                 name: hello-world-active
-#                 port:
-#                   number: 5000
-#             path: /active
-#             pathType: Prefix
-#
-#     - http:
-#         paths:
-#           - backend:
-#               service:
-#                 name: hello-world-preview
-#                 port:
-#                   number: 5000
-#             path: /preview
-#             pathType: Prefix
-# status:
-#   loadBalancer: {}
-#
-#
-#
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
   name: hello-world-active
   namespace: hello-world
 spec:
-  type: NodePort # Change service type to NodePort
   ports:
     - name: "5000"
       port: 5000
       targetPort: 5000
-      nodePort: 30001 # Specify a node port (you can choose any available port)
-  selector:
-    app: rollout-bluegreen
 
 ---
 apiVersion: v1
@@ -156,11 +65,102 @@ metadata:
   name: hello-world-preview
   namespace: hello-world
 spec:
-  type: NodePort # Change service type to NodePort
+  # selector:
+  #   app: hello-world
   ports:
     - name: "5000"
       port: 5000
       targetPort: 5000
-      nodePort: 30002 # Specify a different node port (make sure it's available)
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello-world
+  name: hello-world-deployment
+  namespace: hello-world
+spec:
+  replicas: 1
   selector:
-    app: rollout-bluegreen
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+        - image: docker.io/waylonwalker/learn-rollouts:v2
+          name: hello-world
+          ports:
+            - containerPort: 5000
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    service: hello-world
+  name: hello-world-ingress
+  namespace: hello-world
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: hello-world-active
+                port:
+                  number: 5000
+            path: /active
+            pathType: Prefix
+
+    - http:
+        paths:
+          - backend:
+              service:
+                name: hello-world-preview
+                port:
+                  number: 5000
+            path: /preview
+            pathType: Prefix
+status:
+  loadBalancer: {}
+
+
+
+# ---
+#
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: hello-world-active
+#   namespace: hello-world
+# spec:
+#   type: NodePort # Change service type to NodePort
+#   ports:
+#     - name: "5000"
+#       port: 5000
+#       targetPort: 5000
+#       nodePort: 30001 # Specify a node port (you can choose any available port)
+#   selector:
+#     app: rollout-bluegreen
+#
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: hello-world-preview
+#   namespace: hello-world
+# spec:
+#   type: NodePort # Change service type to NodePort
+#   ports:
+#     - name: "5000"
+#       port: 5000
+#       targetPort: 5000
+#       nodePort: 30002 # Specify a different node port (make sure it's available)
+#   selector:
+#     app: rollout-bluegreen
