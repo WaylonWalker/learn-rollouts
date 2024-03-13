@@ -72,30 +72,30 @@ spec:
       port: 5000
       targetPort: 5000
 
----
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: hello-world
-  name: hello-world-deployment
-  namespace: hello-world
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: hello-world
-  template:
-    metadata:
-      labels:
-        app: hello-world
-    spec:
-      containers:
-        - image: docker.io/waylonwalker/learn-rollouts:v1
-          name: hello-world
-          ports:
-            - containerPort: 5000
+# ---
+#
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   labels:
+#     app: hello-world
+#   name: hello-world-deployment
+#   namespace: hello-world
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: hello-world
+#   template:
+#     metadata:
+#       labels:
+#         app: hello-world
+#     spec:
+#       containers:
+#         - image: docker.io/waylonwalker/learn-rollouts:v2
+#           name: hello-world
+#           ports:
+#             - containerPort: 5000
 
 ---
 
