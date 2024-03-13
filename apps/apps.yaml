@@ -1,4 +1,3 @@
-
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -39,6 +38,26 @@ spec:
     server: 'https://kubernetes.default.svc'
   source:
     path: rollouts-app
+    repoURL: 'https://github.com/waylonwalker/learn-rollouts'
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      prune: true
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: hello-world
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: hello-world
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: hello-world/deployments
     repoURL: 'https://github.com/waylonwalker/learn-rollouts'
     targetRevision: HEAD
   syncPolicy:

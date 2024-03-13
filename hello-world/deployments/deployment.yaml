@@ -1,0 +1,122 @@
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: hello-world
+  namespace: hello-world
+spec: {}
+status: {}
+
+---
+
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: hello-world-bluegreen
+  namespace: hello-world
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: rollout-bluegreen
+  template:
+    metadata:
+      labels:
+        app: rollout-bluegreen
+    spec:
+      containers:
+        - name: hello-world
+          image: docker.io/waylonwalker/learn-rollouts:v1
+          ports:
+            - containerPort: 5000
+  strategy:
+    blueGreen:
+      # activeService specifies the service to update with the new template hash at time of promotion.
+      # This field is mandatory for the blueGreen update strategy.
+      activeService: hello-world-active
+      # previewService specifies the service to update with the new template hash before promotion.
+      # This allows the preview stack to be reachable without serving production traffic.
+      # This field is optional.
+      previewService: hello-world-preview
+      # autoPromotionEnabled disables automated promotion of the new stack by pausing the rollout
+      # immediately before the promotion. If omitted, the default behavior is to promote the new
+      # stack as soon as the ReplicaSet are completely ready/available.
+      # Rollouts can be resumed using: `kubectl argo rollouts promote ROLLOUT`
+      autoPromotionEnabled: false
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-active
+  namespace: hello-world
+spec:
+  ports:
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-preview
+  namespace: hello-world
+spec:
+  # selector:
+  #   app: hello-world
+  ports:
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello-world
+  name: hello-world-deployment
+  namespace: hello-world
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+        - image: docker.io/waylonwalker/learn-rollouts:v1
+          name: hello-world
+          ports:
+            - containerPort: 5000
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    service: hello-world
+  name: hello-world-ingress
+  namespace: hello-world
+spec:
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - backend:
+              service:
+                name: hello-world-active
+                port:
+                  number: 5000
+            path: /active
+            pathType: Prefix
+status:
+  loadBalancer: {}
