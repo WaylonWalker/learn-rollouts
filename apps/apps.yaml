@@ -78,4 +78,4 @@ spec:
       targetPort: 8080 # The port the service is listening on internally
       nodePort: 30000 # Choose a NodePort value within the allowed range (30000-32767)
   selector:
-    app: argocd-server # Selector to match the pods of the original service
+    app: service/argocd-server # Selector to match the pods of the original service
