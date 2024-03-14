@@ -79,6 +79,7 @@ spec:
       port: 5000
       targetPort: 5000
 
+# blue-green deployment replaces traditional deployment
 # ---
 #
 # apiVersion: apps/v1
@@ -104,70 +105,74 @@ spec:
 #           ports:
 #             - containerPort: 5000
 #
+
+
+# outside of kind you might prefer ingress
+# ---
+#
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   labels:
+#     service: hello-world
+#   name: hello-world-ingress
+#   namespace: hello-world
+# spec:
+#   rules:
+#     - http:
+#         paths:
+#           - backend:
+#               service:
+#                 name: hello-world-active
+#                 port:
+#                   number: 5000
+#             path: /active
+#             pathType: Prefix
+#
+#     - http:
+#         paths:
+#           - backend:
+#               service:
+#                 name: hello-world-preview
+#                 port:
+#                   number: 5000
+#             path: /preview
+#             pathType: Prefix
+# status:
+#   loadBalancer: {}
+#
+
+
+# inside of kind nodeport service is easier to test
 ---
 
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: v1
+kind: Service
 metadata:
-  labels:
-    service: hello-world
-  name: hello-world-ingress
+  name: hello-world-active
   namespace: hello-world
 spec:
-  rules:
-    - http:
-        paths:
-          - backend:
-              service:
-                name: hello-world-active
-                port:
-                  number: 5000
-            path: /active
-            pathType: Prefix
+  type: NodePort # Change service type to NodePort
+  ports:
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+      nodePort: 30001 # Specify a node port (you can choose any available port)
+  selector:
+    app: rollout-bluegreen
 
-    - http:
-        paths:
-          - backend:
-              service:
-                name: hello-world-preview
-                port:
-                  number: 5000
-            path: /preview
-            pathType: Prefix
-status:
-  loadBalancer: {}
-
-
-
-# ---
-#
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: hello-world-active
-#   namespace: hello-world
-# spec:
-#   type: NodePort # Change service type to NodePort
-#   ports:
-#     - name: "5000"
-#       port: 5000
-#       targetPort: 5000
-#       nodePort: 30001 # Specify a node port (you can choose any available port)
-#   selector:
-#     app: rollout-bluegreen
-#
-# ---
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: hello-world-preview
-#   namespace: hello-world
-# spec:
-#   type: NodePort # Change service type to NodePort
-#   ports:
-#     - name: "5000"
-#       port: 5000
-#       targetPort: 5000
-#       nodePort: 30002 # Specify a different node port (make sure it's available)
-#   selector:
-#     app: rollout-bluegreen
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-preview
+  namespace: hello-world
+spec:
+  type: NodePort # Change service type to NodePort
+  ports:
+    - name: "5000"
+      port: 5000
+      targetPort: 5000
+      nodePort: 30002 # Specify a different node port (make sure it's available)
+  selector:
+    app: rollout-bluegreen
