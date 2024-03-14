@@ -63,19 +63,3 @@ spec:
   syncPolicy:
     automated:
       prune: true
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: argo-nodeport
-  namespace: argocd
-spec:
-  type: NodePort
-  ports:
-    - port: 443 # The port you want to expose
-      targetPort: 8080 # The port the service is listening on internally
-      nodePort: 30000 # Choose a NodePort value within the allowed range (30000-32767)
-  selector:
-    app: service/argocd-server # Selector to match the pods of the original service
