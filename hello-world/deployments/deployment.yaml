@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: hello-world
-          image: docker.io/waylonwalker/learn-rollouts:v3
+          image: docker.io/waylonwalker/learn-rollouts:v1
           ports:
             - containerPort: 5000
   strategy:
