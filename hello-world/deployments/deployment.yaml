@@ -2,13 +2,6 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: nic-namespace
-
----
-
-apiVersion: v1
-kind: Namespace
-metadata:
   creationTimestamp: null
   name: hello-world
   namespace: hello-world
