@@ -31,6 +31,10 @@ spec:
           image: docker.io/waylonwalker/learn-rollouts:v1
           ports:
             - containerPort: 5000
+          livenessProbe:
+            httpGet:
+              path: /-/healthz
+              port: 5000
   strategy:
     blueGreen:
       # activeService specifies the service to update with the new template hash at time of promotion.
